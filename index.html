@@ -683,27 +683,110 @@
   .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; }
   .reveal.visible { opacity: 1; transform: none; }
 
+  /* ── HAMBURGER / MOBILE NAV ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column; justify-content: center; gap: 5px;
+    width: 36px; height: 36px;
+    background: none; border: 1px solid var(--border);
+    border-radius: 5px; cursor: pointer; padding: 6px;
+    flex-shrink: 0;
+  }
+  .nav-hamburger span {
+    display: block; height: 2px; background: var(--text);
+    border-radius: 2px; transition: transform 0.22s, opacity 0.22s;
+    transform-origin: center;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none;
+    position: fixed; top: 60px; left: 0; right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    z-index: 99;
+    flex-direction: column;
+    padding: 0.75rem 1.5rem 1.25rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    display: block;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--bg2);
+    transition: color 0.15s;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--accent); text-decoration: none; }
+  .mobile-menu .mobile-cta {
+    margin-top: 1rem;
+    background: var(--accent); color: #fff;
+    text-align: center; border-radius: 5px;
+    padding: 0.8rem; font-weight: 600; border-bottom: none;
+  }
+  .mobile-menu .mobile-cta:hover { background: var(--accent2); color: #fff; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 960px) {
     .hero-inner { grid-template-columns: 1fr; }
     .hero-panel { display: none; }
-    .problem-layout { grid-template-columns: 1fr; }
+    .problem-layout { grid-template-columns: 1fr; gap: 2.5rem; }
     .workflow-grid { grid-template-columns: 1fr 1fr; }
     .features-layout { grid-template-columns: 1fr; }
     .feat-card.wide { grid-column: span 1; grid-template-columns: 1fr; }
-    .evidence-layout { grid-template-columns: 1fr; }
-    .cta-inner { grid-template-columns: 1fr; }
+    .evidence-layout { grid-template-columns: 1fr 1fr; }
+    .cta-inner { grid-template-columns: 1fr; gap: 2rem; }
     .cta-actions { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
     .viewer-sidebar-left { display: none; }
     .viewer-controls { width: 100%; border-left: none; border-top: 1px solid var(--border); }
     .viewer-layout { flex-direction: column; }
+    .viewer-main { min-height: 320px; }
+    #dicomCanvas { max-height: 380px; }
     .nav-links { display: none; }
+    .nav-badge { display: none; }
+    .nav-hamburger { display: flex; }
+    .hud-tl, .hud-tr { font-size: 0.58rem; }
   }
+
   @media (max-width: 600px) {
-    section { padding: 3.5rem 0; }
+    nav { padding: 0 1.25rem; }
+    .container { padding: 0 1.25rem; }
+    section { padding: 3rem 0; }
+    #hero { padding: 5rem 0 3rem; }
+    h1 { font-size: 1.85rem; }
+    h2 { font-size: 1.5rem; }
     .workflow-grid { grid-template-columns: 1fr; }
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.6rem; }
+    .evidence-layout { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; }
+    .hero-actions .btn-primary,
+    .hero-actions .btn-ghost { width: 100%; text-align: center; padding: 0.85rem 1rem; }
+    .hst-badge { display: none; }
+    .hst-row { flex-wrap: wrap; gap: 0.3rem; }
+    .perf-table .perf-bar-wrap { display: none; }
+    .viewer-main { min-height: 260px; }
+    #dicomCanvas { max-height: 300px; }
+    .hud-tl { display: none; }
+    .hud-tr { display: none; }
+    .demo-chrome .chrome-address { display: none; }
+    .demo-chrome .chrome-tag { display: none; }
+    .reg-grid { grid-template-columns: 1fr 1fr !important; }
+    .cta-actions { flex-direction: column; width: 100%; }
+    .btn-white, .btn-outline-white { width: 100%; text-align: center; }
+    .footer-inner { flex-direction: column; align-items: flex-start; gap: 1.2rem; }
+    .footer-links { flex-wrap: wrap; gap: 1rem; }
+    section { padding: 2.8rem 0; }
+    .ev-num { font-size: 2.4rem; }
+    .sc-num { font-size: 2.4rem; }
+  }
+
+  @media (max-width: 400px) {
+    h1 { font-size: 1.6rem; }
+    .reg-grid { grid-template-columns: 1fr !important; }
   }
 </style>
 </head>
@@ -729,8 +812,21 @@
   <div class="nav-right">
     <div class="nav-badge">CE Mark Pending</div>
     <a href="#cta" class="nav-cta">Request Access</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#problem" class="mobile-link">Clinical Need</a>
+  <a href="#workflow" class="mobile-link">Workflow</a>
+  <a href="#features" class="mobile-link">Specifications</a>
+  <a href="#demo" class="mobile-link">Viewer Demo</a>
+  <a href="#evidence" class="mobile-link">Validation</a>
+  <a href="#cta" class="mobile-cta mobile-link">Request Access</a>
+</div>
 
 <!-- ═══ HERO ═══ -->
 <section id="hero">
@@ -956,7 +1052,7 @@
       <div class="feat-card reveal">
         <div class="feat-icon">🔒</div>
         <h3>On-premise or cloud deployment</h3>
-        <p>Runs fully on-premise within your clinic network, or via ISO 27001-certified cloud API. HIPAA and GDPR compliant. No patient data retained after inference.</p>
+        <p>Runs fully on-premise within your clinic network, or via ISO 27001-certified cloud API. PIPEDA and GDPR compliant. No patient data retained after inference.</p>
       </div>
 
       <div class="feat-card reveal">
@@ -1129,7 +1225,7 @@
     <div class="rule-label" style="margin-top:3.5rem; margin-bottom:0;">
       <span>Regulatory pathway</span>
     </div>
-    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.5rem;">
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.5rem;" class="reg-grid">
       <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:1.2rem;text-align:center;">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Classification</div>
         <div style="font-weight:600;font-size:0.9rem;">Class IIb (EU MDR)</div>
@@ -1139,12 +1235,12 @@
         <div style="font-weight:600;font-size:0.9rem;color:var(--warn);">Application in Progress</div>
       </div>
       <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:1.2rem;text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">FDA Pathway</div>
-        <div style="font-weight:600;font-size:0.9rem;">510(k) Evaluation</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Health Canada</div>
+        <div style="font-weight:600;font-size:0.9rem;color:var(--warn);">Licence Application Underway</div>
       </div>
       <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:1.2rem;text-align:center;">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Data Compliance</div>
-        <div style="font-weight:600;font-size:0.9rem;">HIPAA · GDPR</div>
+        <div style="font-weight:600;font-size:0.9rem;">PIPEDA · GDPR</div>
       </div>
     </div>
   </div>
@@ -1158,8 +1254,8 @@
         <h2>Ready to bring AI-assisted fracture detection to your practice?</h2>
         <p>Join clinics in early access. No PACS replacement required. Full DICOM integration included.</p>
         <div class="cta-disclaimers">
-          For investigational use only · CE mark application in progress · FDA 510(k) pathway under evaluation<br>
-          HIPAA &amp; GDPR compliant infrastructure · ISO 27001 certified cloud processing
+          For investigational use only · CE mark application in progress · Health Canada licence application underway<br>
+          PIPEDA &amp; GDPR compliant infrastructure · ISO 27001 certified cloud processing
         </div>
       </div>
       <div class="cta-actions">
@@ -1298,6 +1394,22 @@
     });
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+<!-- ═══ MOBILE NAV ═══ -->
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    const open = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', open);
+  });
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+    });
+  });
 </script>
 
 </body>
